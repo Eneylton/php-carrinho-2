@@ -81,6 +81,12 @@ if (isset($_GET['acao'])) {
 
     </td>
 
+    <td collspan="5">
+
+<a href="finalizar.php"> Finalizar </a>
+
+</td>
+
 
 
 </tfoot>
@@ -100,6 +106,10 @@ if (count($_SESSION['carrinho']) == 0) {
                  </td>
              </tr>";
 } else {
+    
+    $_SESSION['dados'] = array();
+
+    $total = 0;
     foreach ($_SESSION['carrinho'] as $id => $qtd) {
 
         $sql = mysqli_query($connect, "Select * from produtos WHERE id = '$id'");
@@ -109,8 +119,9 @@ if (count($_SESSION['carrinho']) == 0) {
         $nome = $ln['nome'];
         $preco = number_format($ln['preco'], "2", ",", ".");
         $sub = number_format($ln['preco'] * $qtd, "2", ",", ".");
+        $subItem = $ln['preco'] * $qtd;
 
-        $total += intval($sub);
+        $total += $subItem;
 
         echo ' <tr>
                 <td>' . $nome . '</td>
@@ -121,11 +132,23 @@ if (count($_SESSION['carrinho']) == 0) {
                </tr>
              ';
 
+
+             array_push(
+                $_SESSION['dados'],
+    
+                array(
+                    'produtos_id' => $id,
+                    'nome'       => $nome,
+                    'qtd'        => $qtd,
+                    'subtotal'   => $sub
+                )
+            );
+
     }
-       
+
        echo '<tr> 
                  <td colspan="4">Total</td>
-                 <td>'. number_format($total, "2", ",", ".").'</td>
+                 <td> R$ '. number_format($total, "2", ",", ".").'</td>
              </tr>';
 
 }
